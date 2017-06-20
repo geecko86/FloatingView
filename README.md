@@ -85,11 +85,7 @@ example)
 ```java
     final Activity activity = getActivity();
     final Intent intent = new Intent(activity, ChatHeadService.class);
-    if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
-        activity.startService(intent);
-    } else {
-        notificationManager.startServiceInForeground(intent, notificationId, notification);
-    }
+    ContextCompat.startForegroundService(activity, intent);
 ```
 
 ## Static Options
@@ -132,7 +128,7 @@ mFloatingViewManager.setActionTrashIconImage(R.drawable.ic_trash_action);
 # Revisions
 ## Update in 2.3
 - Support Android O
-    - If you are targeting Android O or higher, you must use `NotificationManager.startServiceInForeground()` instead of `Context.startService()`.
+    - If you are targeting Android O or higher, you must use `ContextCompat.startForegroundService()` instead of `Context.startService()`.
 ## Update in 2.2
 - Support for large image for FloatingView (not complete, but almost works)([#16](../../issues/16))
 - Support size specification of FloatingView([#16](../../issues/16))

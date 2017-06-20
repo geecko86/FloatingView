@@ -4,7 +4,6 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.DisplayMetrics;
@@ -32,7 +31,7 @@ public class ChatHeadService extends Service implements FloatingViewListener {
     /**
      * 通知ID
      */
-    public static final int NOTIFICATION_ID = 9083150;
+    private static final int NOTIFICATION_ID = 9083150;
 
     /**
      * FloatingViewManager
@@ -69,11 +68,7 @@ public class ChatHeadService extends Service implements FloatingViewListener {
         mFloatingViewManager.addViewToWindow(iconView, options);
 
         // 常駐起動
-        // TODO:Fix it after Android O release
-        // if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 && !Build.VERSION.CODENAME.equals("O")) {
-            startForeground(NOTIFICATION_ID, createNotification(this));
-        }
+        startForeground(NOTIFICATION_ID, createNotification(this));
 
         return START_REDELIVER_INTENT;
     }
@@ -132,7 +127,7 @@ public class ChatHeadService extends Service implements FloatingViewListener {
      *
      * @param context {@link Context}
      */
-    public static Notification createNotification(Context context) {
+    private static Notification createNotification(Context context) {
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setWhen(System.currentTimeMillis());
         builder.setSmallIcon(R.mipmap.ic_launcher);

@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -41,7 +40,7 @@ public class CustomFloatingViewService extends Service implements FloatingViewLi
     /**
      * 通知ID
      */
-    public static final int NOTIFICATION_ID = 908114;
+    private static final int NOTIFICATION_ID = 908114;
 
     /**
      * Prefs Key(Last position X)
@@ -100,12 +99,8 @@ public class CustomFloatingViewService extends Service implements FloatingViewLi
         final FloatingViewManager.Options options = loadOptions(metrics);
         mFloatingViewManager.addViewToWindow(iconView, options);
 
-        // TODO:Fix it after Android O release
-        // if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 && !Build.VERSION.CODENAME.equals("O")) {
-            // 常駐起動
-            startForeground(NOTIFICATION_ID, createNotification(this));
-        }
+        // 常駐起動
+        startForeground(NOTIFICATION_ID, createNotification(this));
 
         return START_REDELIVER_INTENT;
     }
@@ -165,7 +160,7 @@ public class CustomFloatingViewService extends Service implements FloatingViewLi
      *
      * @param context {@link Context}
      */
-    public static Notification createNotification(Context context) {
+    private static Notification createNotification(Context context) {
         final NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
         builder.setWhen(System.currentTimeMillis());
         builder.setSmallIcon(R.mipmap.ic_launcher);

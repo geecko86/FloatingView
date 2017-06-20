@@ -13,7 +13,7 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:26.0.0-alpha1'
+    compile 'com.android.support:support-annotations:26.0.0-beta2'
 }
 
 // build a jar with source files
