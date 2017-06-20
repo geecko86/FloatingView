@@ -63,9 +63,7 @@ class FullscreenObserverView extends View implements ViewTreeObserver.OnGlobalLa
     private final Rect mWindowRect;
 
     static {
-        // TODO:Fix it after Android O release
-        // if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 && !Build.VERSION.CODENAME.equals("O")) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
             OVERLAY_TYPE = WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY;
         } else {
             OVERLAY_TYPE = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;

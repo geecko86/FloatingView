@@ -292,9 +292,7 @@ class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreDrawList
     private final boolean mIsTablet;
 
     static {
-        // TODO:Fix it after Android O release
-        // if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1 && !Build.VERSION.CODENAME.equals("O")) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.N_MR1) {
             OVERLAY_TYPE = WindowManager.LayoutParams.TYPE_PRIORITY_PHONE;
         } else {
             OVERLAY_TYPE = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
