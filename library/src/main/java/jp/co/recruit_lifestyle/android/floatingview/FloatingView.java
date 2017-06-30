@@ -1084,7 +1084,7 @@ class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreDrawList
         /**
          * アニメーションをリフレッシュするミリ秒
          */
-        private static final long ANIMATION_REFRESH_TIME_MILLIS = 17L;
+        private static final long ANIMATION_REFRESH_TIME_MILLIS = 10L;
 
         /**
          * FloatingViewの吸着の着脱時間
