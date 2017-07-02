@@ -551,13 +551,17 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
 
         // タッチ不能な場合は何もしない
         if (!mIsDraggable) {
+    	    // タッチリスナを通知
+    	    if (mOnTouchListener != null) {
+	        mOnTouchListener.onTouch(this, event);
+    	    }
             return true;
         }
 
         // 現在位置のキャッシュ
+        final int action = event.getAction();
         mScreenTouchX = event.getRawX();
         mScreenTouchY = event.getRawY();
-        final int action = event.getAction();
         // 押下
         if (action == MotionEvent.ACTION_DOWN) {
             // アニメーションのキャンセル
@@ -939,7 +943,7 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
      *
      * @param isDraggable ドラッグ可能にする場合はtrue
      */
-    void setDraggable(boolean isDraggable) {
+    public void setDraggable(boolean isDraggable) {
         mIsDraggable = isDraggable;
     }
 
