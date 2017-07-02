@@ -58,7 +58,7 @@ import java.lang.ref.WeakReference;
  * http://stackoverflow.com/questions/18503050/how-to-create-draggabble-system-alert-in-android
  * FIXME:Nexus5＋YouTubeアプリの場合にナビゲーションバーよりも前面に出てきてしまう
  */
-class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreDrawListener {
+public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreDrawListener {
 
     /**
      * 移動に最低必要なしきい値(dp)
@@ -775,7 +775,7 @@ class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreDrawList
      * @param goalPositionY 移動先のY座標
      * @param withAnimation アニメーションを行う場合はtrue.行わない場合はfalse
      */
-    private void moveTo(final int currentX, final int currentY, int goalPositionX, int goalPositionY, boolean withAnimation) {
+    public void moveTo(final int currentX, final int currentY, int goalPositionX, int goalPositionY, boolean withAnimation) {
         // 画面端からはみ出さないように調整
         goalPositionX = Math.min(Math.max(mPositionLimitRect.left, goalPositionX), mPositionLimitRect.right);
         goalPositionY = Math.min(Math.max(mPositionLimitRect.top, goalPositionY), mPositionLimitRect.bottom);

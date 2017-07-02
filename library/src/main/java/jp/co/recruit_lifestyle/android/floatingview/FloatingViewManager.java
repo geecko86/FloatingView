@@ -426,6 +426,10 @@ public class FloatingViewManager implements ScreenChangedListener, View.OnTouchL
         mTrashView.setActionTrashIconImage(drawable);
     }
 
+    public FloatingView getTargetFloatingView() {
+        return mTargetFloatingView;
+    }
+
     /**
      * 表示モードを変更します。
      *
