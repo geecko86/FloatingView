@@ -719,7 +719,7 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
      * @param startY        Y座標の初期値
      * @param withAnimation アニメーションを行う場合はtrue.行わない場合はfalse
      */
-    private void moveToEdge(int startX, int startY, boolean withAnimation) {
+    public void moveToEdge(int startX, int startY, boolean withAnimation) {
         //TODO:縦軸の速度も考慮して斜めに行くようにする
         // X・Y座標と移動方向を設定
         int goalPositionX = startX;
@@ -963,6 +963,10 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
      */
     float getShape() {
         return mShape;
+    }
+
+    public Rect getPositionLimits() {
+        return mPositionLimitRect;
     }
 
     /**
