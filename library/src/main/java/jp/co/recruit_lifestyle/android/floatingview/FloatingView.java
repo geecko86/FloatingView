@@ -16,6 +16,7 @@
 
 package jp.co.recruit_lifestyle.android.floatingview;
 
+import android.animation.Animator;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -237,7 +238,8 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
     /**
      * 左・右端に寄せるアニメーション
      */
-    private ValueAnimator mMoveEdgeAnimator;
+    private ValueAnimator mMoveEdgeAnimatorX;
+    private ValueAnimator mMoveEdgeAnimatorY;
 
     /**
      * Interpolator
@@ -533,8 +535,11 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
      */
     @Override
     protected void onDetachedFromWindow() {
-        if (mMoveEdgeAnimator != null) {
-            mMoveEdgeAnimator.removeAllUpdateListeners();
+        if (mMoveEdgeAnimatorX != null) {
+            mMoveEdgeAnimatorX.removeAllUpdateListeners();
+        }
+        if (mMoveEdgeAnimatorY != null) {
+            mMoveEdgeAnimatorY.removeAllUpdateListeners();
         }
         super.onDetachedFromWindow();
     }
@@ -551,10 +556,10 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
 
         // タッチ不能な場合は何もしない
         if (!mIsDraggable) {
-    	    // タッチリスナを通知
-    	    if (mOnTouchListener != null) {
-	        mOnTouchListener.onTouch(this, event);
-    	    }
+            // タッチリスナを通知
+            if (mOnTouchListener != null) {
+                mOnTouchListener.onTouch(this, event);
+            }
             return true;
         }
 
@@ -775,14 +780,14 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
      *
      * @param currentX      現在のX座標（アニメーションの始点用に使用）
      * @param currentY      現在のY座標（アニメーションの始点用に使用）
-     * @param goalPositionX 移動先のX座標
-     * @param goalPositionY 移動先のY座標
+     * @param targetX 移動先のX座標
+     * @param targetY 移動先のY座標
      * @param withAnimation アニメーションを行う場合はtrue.行わない場合はfalse
      */
-    public void moveTo(final int currentX, final int currentY, int goalPositionX, int goalPositionY, boolean withAnimation) {
+    public void moveTo(final int currentX, final int currentY, int targetX, int targetY, boolean withAnimation) {
         // 画面端からはみ出さないように調整
-        goalPositionX = Math.min(Math.max(mPositionLimitRect.left, goalPositionX), mPositionLimitRect.right);
-        goalPositionY = Math.min(Math.max(mPositionLimitRect.top, goalPositionY), mPositionLimitRect.bottom);
+        final int goalPositionX = Math.min(Math.max(mPositionLimitRect.left, targetX), mPositionLimitRect.right);
+        final int goalPositionY = Math.min(Math.max(mPositionLimitRect.top, targetY), mPositionLimitRect.bottom);
         // アニメーションを行う場合
         if (withAnimation) {
             if (mUsePhysics && mVelocityTracker != null) {
@@ -865,32 +870,75 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
             } else {
                 // TODO:Y座標もアニメーションさせる
 
+                final boolean longestY = Math.abs(currentY - goalPositionY) > Math.abs(currentX - goalPositionX);
+
                 //to move only y-coord
-                if (goalPositionX == currentX) {
-                    mMoveEdgeAnimator = ValueAnimator.ofInt(currentY, goalPositionY);
-                    mMoveEdgeAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        @Override
-                        public void onAnimationUpdate(ValueAnimator animation) {
-                            mParams.y = (Integer) animation.getAnimatedValue();
+                mMoveEdgeAnimatorY = ValueAnimator.ofInt(currentY, goalPositionY);
+                mMoveEdgeAnimatorY.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        mParams.y = (int) (Integer) animation.getAnimatedValue();
+                        if (longestY)
                             mWindowManager.updateViewLayout(FloatingView.this, mParams);
-                        }
-                    });
-                } else {
-                    // to move only x coord (to left or right)
-                    mParams.y = goalPositionY;
-                    mMoveEdgeAnimator = ValueAnimator.ofInt(currentX, goalPositionX);
-                    mMoveEdgeAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        @Override
-                        public void onAnimationUpdate(ValueAnimator animation) {
-                            mParams.x = (Integer) animation.getAnimatedValue();
+                    }
+                });
+                mMoveEdgeAnimatorY.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mParams.y = goalPositionY;
+                        mWindowManager.updateViewLayout(FloatingView.this, mParams);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+                    }
+                });
+                mMoveEdgeAnimatorY.setDuration(MOVE_TO_EDGE_DURATION);
+                mMoveEdgeAnimatorY.setInterpolator(mMoveEdgeInterpolator);
+
+                // to move only x coord (to left or right)
+                mMoveEdgeAnimatorX = ValueAnimator.ofInt(currentX, goalPositionX);
+                mMoveEdgeAnimatorX.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        mParams.x = (int) (Integer) animation.getAnimatedValue();
+                        if (!longestY)
                             mWindowManager.updateViewLayout(FloatingView.this, mParams);
-                        }
-                    });
-                }
+                    }
+                });
+                mMoveEdgeAnimatorX.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mParams.x = goalPositionX;
+                        mWindowManager.updateViewLayout(FloatingView.this, mParams);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+                    }
+                });
                 // X軸のアニメーション設定
-                mMoveEdgeAnimator.setDuration(MOVE_TO_EDGE_DURATION);
-                mMoveEdgeAnimator.setInterpolator(mMoveEdgeInterpolator);
-                mMoveEdgeAnimator.start();
+                mMoveEdgeAnimatorX.setDuration(MOVE_TO_EDGE_DURATION);
+                mMoveEdgeAnimatorX.setInterpolator(mMoveEdgeInterpolator);
+
+                mMoveEdgeAnimatorY.start();
+                mMoveEdgeAnimatorX.start();
             }
         } else {
             // 位置が変化した時のみ更新
@@ -912,9 +960,14 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
      * アニメーションをキャンセルします。
      */
     private void cancelAnimation() {
-        if (mMoveEdgeAnimator != null && mMoveEdgeAnimator.isStarted()) {
-            mMoveEdgeAnimator.cancel();
-            mMoveEdgeAnimator = null;
+        if (mMoveEdgeAnimatorX != null && mMoveEdgeAnimatorX.isStarted()) {
+            mMoveEdgeAnimatorX.cancel();
+            mMoveEdgeAnimatorX = null;
+        }
+
+        if (mMoveEdgeAnimatorY != null && mMoveEdgeAnimatorY.isStarted()) {
+            mMoveEdgeAnimatorY.cancel();
+            mMoveEdgeAnimatorY = null;
         }
     }
 
