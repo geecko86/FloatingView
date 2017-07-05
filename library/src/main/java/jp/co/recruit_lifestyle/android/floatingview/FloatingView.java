@@ -173,6 +173,8 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
      */
     private boolean mIsMoveAccept;
 
+    private boolean mBlockMoveToEdge;
+
     /**
      * スクリーンのタッチX座標
      */
@@ -730,6 +732,9 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
         int goalPositionX = startX;
         int goalPositionY = startY;
 
+        if (mBlockMoveToEdge)
+            return;
+
         // 画面端に移動する場合は画面端の座標を設定
         if (mMoveDirection == FloatingViewManager.MOVE_DIRECTION_DEFAULT) {
             final boolean isMoveRightEdge = startX > (mMetrics.widthPixels - getWidth()) / 2;
@@ -954,6 +959,10 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
         mScreenTouchDownX = 0;
         mScreenTouchDownY = 0;
         mIsMoveAccept = false;
+    }
+
+    public void setBlockMoveToEdge(boolean value) {
+        mBlockMoveToEdge = value;
     }
 
     /**
