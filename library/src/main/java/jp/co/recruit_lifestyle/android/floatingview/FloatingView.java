@@ -803,7 +803,7 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
                         .setDampingRatio(0.7f)
                         .setStiffness(350f);
 
-                SpringAnimation springAnimationX = new SpringAnimation(new FloatValueHolder());
+                final SpringAnimation springAnimationX = new SpringAnimation(new FloatValueHolder());
                 springAnimationX.setStartVelocity(mVelocityTracker.getXVelocity())
                         .setStartValue(mParams.x)
                         .setSpring(springX)
@@ -820,11 +820,17 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
                                     }
                                 }
                             }
-                        })
-                        .start();
+                        });
+
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        springAnimationX.start();
+                    }
+                });
 
                 if (mParams.y < mPositionLimitRect.bottom && mParams.y > mPositionLimitRect.top) {
-                    FlingAnimation flingAnimationY = new FlingAnimation(new FloatValueHolder());
+                    final FlingAnimation flingAnimationY = new FlingAnimation(new FloatValueHolder());
 
                     flingAnimationY.setStartVelocity(velocityY)
                             .setMaxValue(mPositionLimitRect.bottom)
@@ -844,14 +850,20 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
                                         }
                                     }
                                 }
-                            })
-                            .start();
+                            });
+
+                    post(new Runnable() {
+                        @Override
+                        public void run() {
+                            flingAnimationY.start();
+                        }
+                    });
                 } else {
                     SpringForce springY = new SpringForce(currentY < mMetrics.heightPixels / 2 ? mPositionLimitRect.top : mPositionLimitRect.bottom)
                             .setDampingRatio(SpringForce.DAMPING_RATIO_LOW_BOUNCY)
                             .setStiffness(SpringForce.STIFFNESS_LOW);
 
-                    SpringAnimation springAnimationY = new SpringAnimation(new FloatValueHolder());
+                    final SpringAnimation springAnimationY = new SpringAnimation(new FloatValueHolder());
 
                     springAnimationY.setStartVelocity(velocityY)
                             .setStartValue(mParams.y)
@@ -869,8 +881,13 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
                                         }
                                     }
                                 }
-                            })
-                            .start();
+                            });
+                    post(new Runnable() {
+                        @Override
+                        public void run() {
+                            springAnimationY.start();
+                        }
+                    });
                 }
             } else {
                 // TODO:Y座標もアニメーションさせる
@@ -942,8 +959,13 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
                 mMoveEdgeAnimatorX.setDuration(MOVE_TO_EDGE_DURATION);
                 mMoveEdgeAnimatorX.setInterpolator(mMoveEdgeInterpolator);
 
-                mMoveEdgeAnimatorY.start();
-                mMoveEdgeAnimatorX.start();
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mMoveEdgeAnimatorY.start();
+                        mMoveEdgeAnimatorX.start();
+                    }
+                });
             }
         } else {
             // 位置が変化した時のみ更新
