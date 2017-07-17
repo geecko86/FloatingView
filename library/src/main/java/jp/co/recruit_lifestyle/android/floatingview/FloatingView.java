@@ -900,7 +900,7 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
                     @Override
                     public void onAnimationUpdate(ValueAnimator animation) {
                         mParams.y = (int) (Integer) animation.getAnimatedValue();
-                        if (longestY)
+                        if (longestY && getWindowToken() != null)
                             mWindowManager.updateViewLayout(FloatingView.this, mParams);
                     }
                 });
@@ -912,7 +912,8 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         mParams.y = goalPositionY;
-                        mWindowManager.updateViewLayout(FloatingView.this, mParams);
+                        if (getWindowToken() != null)
+                            mWindowManager.updateViewLayout(FloatingView.this, mParams);
                     }
 
                     @Override
@@ -944,7 +945,8 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         mParams.x = goalPositionX;
-                        mWindowManager.updateViewLayout(FloatingView.this, mParams);
+                        if (getWindowToken() != null)
+                            mWindowManager.updateViewLayout(FloatingView.this, mParams);
                     }
 
                     @Override
@@ -962,8 +964,10 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
                 post(new Runnable() {
                     @Override
                     public void run() {
-                        mMoveEdgeAnimatorY.start();
-                        mMoveEdgeAnimatorX.start();
+                        if (mMoveEdgeAnimatorY != null)
+                            mMoveEdgeAnimatorY.start();
+                        if (mMoveEdgeAnimatorX != null)
+                            mMoveEdgeAnimatorX.start();
                     }
                 });
             }
