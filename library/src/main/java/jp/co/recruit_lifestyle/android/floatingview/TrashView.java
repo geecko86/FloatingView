@@ -196,7 +196,8 @@ class TrashView extends FrameLayout implements ViewTreeObserver.OnPreDrawListene
         mParams = new WindowManager.LayoutParams();
         mParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
         mParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-        mParams.type = WindowManager.LayoutParams.TYPE_PRIORITY_PHONE;
+        mParams.type = Build.VERSION.SDK_INT >= 26 ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY :
+                WindowManager.LayoutParams.TYPE_PRIORITY_PHONE;
         mParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE |
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
