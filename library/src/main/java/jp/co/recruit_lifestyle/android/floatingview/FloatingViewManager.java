@@ -220,6 +220,10 @@ public class FloatingViewManager implements ScreenChangedListener, View.OnTouchL
         return Rect.intersects(mTrashViewRect, mFloatingViewRect);
     }
 
+     public FloatingView getTargetFloatingView() {
+        return mTargetFloatingView;
+     }
+
     /**
      * 画面がフルスクリーンになった場合はViewを非表示にします。
      */
