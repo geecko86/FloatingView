@@ -16,6 +16,7 @@
 
 package jp.co.recruit_lifestyle.android.floatingview;
 
+import android.animation.Animator;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -99,6 +100,8 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
      * 終了状態
      */
     static final int STATE_FINISHING = 2;
+    private ValueAnimator mMoveEdgeAnimatorY;
+    private ValueAnimator mMoveEdgeAnimatorX;
 
     /**
      * AnimationState
@@ -851,34 +854,88 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
             } else {
               // TODO:Y座標もアニメーションさせる
 
-              //to move only y-coord
-              if (goalPositionX == currentX) {
-                  mMoveEdgeAnimator = ValueAnimator.ofInt(currentY, goalPositionY);
-                  mMoveEdgeAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                      @Override
-                      public void onAnimationUpdate(ValueAnimator animation) {
-                          mParams.y = (Integer) animation.getAnimatedValue();
-                          updateViewLayout();
-                          updateInitAnimation(animation);
-                      }
-                  });
-              } else {
-                  // to move only x coord (to left or right)
-                  mParams.y = goalPositionY;
-                  mMoveEdgeAnimator = ValueAnimator.ofInt(currentX, goalPositionX);
-                  mMoveEdgeAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                      @Override
-                      public void onAnimationUpdate(ValueAnimator animation) {
-                          mParams.x = (Integer) animation.getAnimatedValue();
-                          updateViewLayout();
-                          updateInitAnimation(animation);
-                      }
-                  });
-                }
+                final boolean longestY = Math.abs(currentY - goalPositionY) > Math.abs(currentX - goalPositionX);
+
+                //to move only y-coord
+                mMoveEdgeAnimatorY = ValueAnimator.ofInt(currentY, goalPositionY);
+                mMoveEdgeAnimatorY.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        mParams.y = (int) (Integer) animation.getAnimatedValue();
+                        if (longestY) {
+                            updateViewLayout();
+                            updateInitAnimation(animation);
+                        }
+                    }
+                });
+                final int finalGoalPositionY = goalPositionY;
+                mMoveEdgeAnimatorY.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mParams.y = finalGoalPositionY;
+                        updateViewLayout();
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+                    }
+                });
+                mMoveEdgeAnimatorY.setDuration(MOVE_TO_EDGE_DURATION);
+                mMoveEdgeAnimatorY.setInterpolator(mMoveEdgeInterpolator);
+
+                // to move only x coord (to left or right)
+                mMoveEdgeAnimatorX = ValueAnimator.ofInt(currentX, goalPositionX);
+                mMoveEdgeAnimatorX.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator animation) {
+                        mParams.x = (int) (Integer) animation.getAnimatedValue();
+                        if (!longestY) {
+                            updateViewLayout();
+                            updateInitAnimation(animation);
+                        }
+                    }
+                });
+                final int finalGoalPositionX = goalPositionX;
+                mMoveEdgeAnimatorX.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mParams.x = finalGoalPositionX;
+                        updateViewLayout();
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+                    }
+                });
                 // X軸のアニメーション設定
-                mMoveEdgeAnimator.setDuration(MOVE_TO_EDGE_DURATION);
-                mMoveEdgeAnimator.setInterpolator(mMoveEdgeInterpolator);
-                mMoveEdgeAnimator.start();
+                mMoveEdgeAnimatorX.setDuration(MOVE_TO_EDGE_DURATION);
+                mMoveEdgeAnimatorX.setInterpolator(mMoveEdgeInterpolator);
+
+                post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mMoveEdgeAnimatorY != null)
+                            mMoveEdgeAnimatorY.start();
+                        if (mMoveEdgeAnimatorX != null)
+                            mMoveEdgeAnimatorX.start();
+                    }
+                });
             }
         } else {
             // 位置が変化した時のみ更新
