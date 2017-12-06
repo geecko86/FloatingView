@@ -190,7 +190,7 @@ public class FloatingViewManager implements ScreenChangedListener, View.OnTouchL
     public FloatingViewManager(Context context, FloatingViewListener listener) {
         mContext = context;
         mResources = context.getResources();
-        mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        mWindowManager = (WindowManager) context.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         mDisplayMetrics = new DisplayMetrics();
         mFloatingViewListener = listener;
         mFloatingViewRect = new Rect();
