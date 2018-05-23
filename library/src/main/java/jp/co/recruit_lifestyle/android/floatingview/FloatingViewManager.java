@@ -93,7 +93,6 @@ public class FloatingViewManager implements ScreenChangedListener, View.OnTouchL
      */
     public static final int MOVE_DIRECTION_THROWN = 5;
 
-
     /**
      * Moving direction
      */
@@ -616,6 +615,7 @@ public class FloatingViewManager implements ScreenChangedListener, View.OnTouchL
             floatingViewWidth = FloatingView.DEFAULT_WIDTH;
             floatingViewHeight = FloatingView.DEFAULT_HEIGHT;
             moveDirection = MOVE_DIRECTION_DEFAULT;
+            usePhysics = true;
             animateInitialMove = true;
         }
 
