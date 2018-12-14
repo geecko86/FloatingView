@@ -26,7 +26,6 @@ import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
-import android.support.v4.view.ViewCompat;
 import android.util.DisplayMetrics;
 import android.view.DisplayCutout;
 import android.view.HapticFeedbackConstants;
@@ -598,10 +597,11 @@ public class FloatingViewManager implements ScreenChangedListener, View.OnTouchL
      * @param view {@link View}
      */
     private void removeViewImmediate(View view) {
-        if (!ViewCompat.isAttachedToWindow(view)) {
-            return;
+        try {
+            mWindowManager.removeViewImmediate(view);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
         }
-        mWindowManager.removeViewImmediate(view);
     }
 
     /**
