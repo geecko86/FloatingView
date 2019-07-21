@@ -686,11 +686,7 @@ public class FloatingView extends FrameLayout implements ViewTreeObserver.OnPreD
         // If the portrait, is displayed at the bottom of the screen
         if (isPortrait) {
             // auto hide navigation bar
-            if (!hasSoftNavigationBar && mBaseNavigationBarHeight != 0) {
-                mNavigationBarVerticalOffset = 0;
-            } else {
-                mNavigationBarVerticalOffset = mBaseNavigationBarHeight;
-            }
+            mNavigationBarVerticalOffset = 0;
             mNavigationBarHorizontalOffset = 0;
             return;
         }
